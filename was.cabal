@@ -1,5 +1,7 @@
 name:               was
-version:            0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1
+version:            0.0.1
+Cabal-Version:  >= 1.2
+build-type: Simple
 
 executable was
   ghc-options: -W
