@@ -1,0 +1,12 @@
+name:               was
+version:            0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1
+
+executable was
+  ghc-options: -W
+  hs-source-dirs: .
+  main-is:          Main.hs
+  build-depends:    FunGEn
+                   ,base
+                   ,OpenGL
+                   ,GLUT
+                   ,random
