@@ -10,3 +10,4 @@ executable was
                    ,OpenGL
                    ,GLUT
                    ,random
+                   ,queue

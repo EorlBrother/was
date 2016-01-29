@@ -31,7 +31,7 @@ main = do
         ,(SpecialKey KeyLeft,  StillDown, moveBarToLeft)
         ,(Char 'q',            Press,     \_ _ -> funExit)
         ]
-  funInit winConfig gameMap [bar,ball] () initScore input gameCycle (Timer 30) []
+  funInit winConfig gameMap [bar,ball] () initScore input gameCycle (Timer 20) []
 
 createBall :: GameObject ()
 createBall =
@@ -84,4 +84,4 @@ gameCycle = do
   let (_,vy) = getGameObjectSpeed ball
   when (and [col5, vy < 0])  (do reverseYSpeed ball
                                  setGameAttribute (Score (n + 10)))
-  showFPS TimesRoman24 (w-40,0) 1.0 0.0 0.0
+  showFPS TimesRoman24 (w-60,0) 1.0 0.0 0.0
