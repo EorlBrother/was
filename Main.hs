@@ -54,10 +54,7 @@ main :: IO ()
 main = do
     let winConfig = ((100,80),(width,height),"WAS")
         gameMap = colorMap 0.0 0.0 0.0 w h
-        
-      groups = [(objectGroup "pots"  createMsgs )]
-
-        
+        groups = []
         initPots =  [emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot]
         initCombo = zeros runeNumber
         initGA = GA 0 0 initPots initCombo
@@ -67,7 +64,7 @@ main = do
           ,(Char (chr 27), Press, \_ _ -> funExit)
           ,(MouseButton LeftButton, StillDown, \_ pos -> lecftClickCallback pos)
           ] 
-    funInit winConfig gameMap [] initState initGA input gameCycle (Timer 20) []
+    funInit winConfig gameMap groups initState initGA input gameCycle (Timer 20) []
 
 lecftClickCallback :: Position -> WasAction ()
 lecftClickCallback pos =	return ()
