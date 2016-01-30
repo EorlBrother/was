@@ -40,7 +40,7 @@ main :: IO ()
 main = do
     let winConfig = ((100,80),(width,height),"WAS")
         gameMap = colorMap 0.0 0.0 0.0 w h
-
+        
         
         initPots =  [emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot]
         initCombo = zeros runeNumber
