@@ -87,7 +87,7 @@ checkComboFullfilled (h1:t1) (h2:t2) = h1 >= h2 && checkComboFullfilled t1 t2
 initializeGraphics :: WasAction ()
 initializeGraphics = do
 	disableGameFlags
-	let texture = loadPictureInv "graphics/board.bmp" (Just [(255, 255, 255)])
+	let texture = loadPictureInv "graphics/board.bmp" (Just [(255, 0, 255)])
   	GA s1 s2 pots combo runeTextures<- getGameAttribute
   	setGameAttribute (GA s1 s2 pots combo texture)
   	nextTurn
@@ -113,7 +113,6 @@ drawSprite picList picIndex (pX, pY) (sX, sY)= do
 
 gameCycle :: WasAction ()
 gameCycle = do
-
   GA s1 s2 pots combo runeTextures<- getGameAttribute
   setGameAttribute (GA s1 s2 pots combo runeTextures)
   gState <- getGameState
@@ -126,3 +125,4 @@ gameCycle = do
   printOnScreen (show s2) TimesRoman24 (20,0) 1.0 1.0 1.0
   showFPS TimesRoman24 (w-60,0) 1.0 0.0 0.0
   liftIOtoIOGame (drawSprite runeTextures 0 (400,300) (100,100))
+  
