@@ -94,6 +94,6 @@ gameCycle = do
   printOnScreen (show s2) TimesRoman24 (20,0) 1.0 1.0 1.0
   gState <- getGameState
   case gState of
-      Player n -> printOnScreen ("Player " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
+      Player n -> printOnScreen ("Player " ++ show(n)) TimesRoman24 (100,100) 0.0 1.0 0.0
       Calculation n -> printOnScreen ("Calculation " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
   showFPS TimesRoman24 (w-60,0) 1.0 0.0 0.0
