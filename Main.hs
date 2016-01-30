@@ -87,7 +87,7 @@ checkComboFullfilled (h1:t1) (h2:t2) = h1 >= h2 && checkComboFullfilled t1 t2
 initializeGraphics :: WasAction ()
 initializeGraphics = do
 	disableGameFlags
-	let texture = loadPictureInv "graphics/board.bmp" (Just [(255, 255, 255)])
+	let texture = loadPictureInv "graphics/board.bmp" (Just [(255, 0, 255)])
   	GA s1 s2 pots combo runeTextures<- getGameAttribute
   	setGameAttribute (GA s1 s2 pots combo texture)
   	nextTurn
@@ -95,17 +95,17 @@ initializeGraphics = do
 
 drawSprite :: IO [TextureObject] -> Int -> (GLdouble,GLdouble) -> (GLdouble,GLdouble) -> IO ()
 drawSprite picList picIndex (pX, pY) (sX, sY)= do
+	p <- picList
 	loadIdentity
 	translate (Vector3 pX pY (0 :: GLdouble) )
 	texture Texture2D $= Enabled
-	p <- picList
 	bindTexture Texture2D (p !! picIndex)
 	color (Color4 1.0 1.0 1.0 (1.0 :: GLfloat))
 	renderPrimitive Quads $ do
-	texCoord2 0.0 0.0;  vertex3 (-x) (-y) 0.0
-	texCoord2 1.0 0.0;  vertex3   x  (-y) 0.0
-	texCoord2 1.0 1.0;  vertex3   x    y  0.0
-	texCoord2 0.0 1.0;  vertex3 (-x)   y  0.0
+		texCoord2 0.0 0.0;  vertex3 (-x) (-y) 0.0
+		texCoord2 1.0 0.0;  vertex3   x  (-y) 0.0
+		texCoord2 1.0 1.0;  vertex3   x    y  0.0
+		texCoord2 0.0 1.0;  vertex3 (-x)   y  0.0
 	texture Texture2D $= Disabled
 	where 
 		x = sX/2
