@@ -9,8 +9,9 @@ import Graphics.UI.Fungen
 import Graphics.Rendering.OpenGL (GLdouble)
 import Data.Dequeue
 import Data.Char
+--import Data.Sequence
 
-data Pot = Pot ([Int], BankersDequeue Integer)
+data Pot = Pot [Int] (BankersDequeue Int)
 data GameAttribute = GA Int Int [Pot] [Int]-- Scores, die Behälter, Aktuelle Combo
 data GameState = Player Int | Calculation Int
 
@@ -22,19 +23,32 @@ w = fromIntegral width :: GLdouble
 h = fromIntegral height :: GLdouble
 
 runeNumber = 6
-emptyPot = Pot ((zeros runeNumber), empty :: BankersDequeue Integer)
+emptyPot = Pot (zeros runeNumber) (empty :: BankersDequeue Int)
 
 zeros 0 = []
 zeros k = 0:zeros (k-1)
 
---moveRunes_ :: [Pot] -> [Pot] 
---moveRunes_ pots = pots
+--removeMaybe :: (Maybe (a, q a)) -> (a, q a)
+--removeMaybe (Just a) = (a, q a)
+--removeMaybe (Nothing) = -1
 
---moveRunes ::  [Pot] -> Int -> [Pot]
---moveRunes pots field = do
---	let x = pots!!field
---	in newPots <- [if i == field then emptyPot else pots!!i | i <- [0..7]]
---	[]
+moveRunes_ :: [Pot] -> Int  -> (BankersDequeue Int) -> [Pot]
+moveRunes_ pots field queue 
+	| Data.Dequeue.null(queue) = pots
+	| otherwise = do
+		let Pot oldRunes oldQueue = pots!!field
+		let Just (curRune, newBufferQueue) = popFront(queue)
+		let newQueue = pushBack queue curRune
+		let newRunes = [if i == curRune then (oldRunes!!i + 1) else oldRunes!!i | i <- [0..runeNumber]]
+		let newPot = Pot newRunes newQueue
+		[if i == field then newPot else pots!!i | i <- [0..7]]
+
+moveRunes ::  [Pot] -> Int -> [Pot]
+moveRunes pots field = do
+	let Pot _ queue = pots!!field
+	let	newPots = [if i == field then emptyPot else pots!!i | i <- [0..7]]
+
+	moveRunes_ newPots (field+1) queue
 
 main :: IO ()
 main = do
