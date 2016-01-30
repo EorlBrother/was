@@ -41,6 +41,8 @@ main = do
     let winConfig = ((100,80),(width,height),"WAS")
         gameMap = colorMap 0.0 0.0 0.0 w h
         
+      groups = [(objectGroup "pots"  createMsgs )]
+
         
         initPots =  [emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot]
         initCombo = zeros runeNumber
