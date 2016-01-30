@@ -12,10 +12,10 @@ import Data.Char
 --import Data.Sequence
 
 data Pot = Pot [Int] (BankersDequeue Int)
-data GameAttribute = GA Int Int [Pot] [Int]-- Scores, die Behälter, Aktuelle Combo
+data GameAttribute = GA Int Int [Pot] [Int] -- Scores, die Behälter, Aktuelle Combo
 data GameState = Player Int | Calculation Int
 
-type WasAction a = IOGame GameAttribute () GameState () a
+type WasAction a = IOGame GameAttribute () GameState () a 
 
 width = 800
 height = 600
@@ -27,28 +27,6 @@ emptyPot = Pot (zeros runeNumber) (empty :: BankersDequeue Int)
 
 zeros 0 = []
 zeros k = 0:zeros (k-1)
-
---removeMaybe :: (Maybe (a, q a)) -> (a, q a)
---removeMaybe (Just a) = (a, q a)
---removeMaybe (Nothing) = -1
-
-moveRunes_ :: [Pot] -> Int  -> (BankersDequeue Int) -> [Pot]
-moveRunes_ pots field queue 
-	| Data.Dequeue.null(queue) = pots
-	| otherwise = do
-		let Pot oldRunes oldQueue = pots!!field
-		let Just (curRune, newBufferQueue) = popFront(queue)
-		let newQueue = pushBack queue curRune
-		let newRunes = [if i == curRune then (oldRunes!!i + 1) else oldRunes!!i | i <- [0..runeNumber]]
-		let newPot = Pot newRunes newQueue
-		[if i == field then newPot else pots!!i | i <- [0..7]]
-
-moveRunes ::  [Pot] -> Int -> [Pot]
-moveRunes pots field = do
-	let Pot _ queue = pots!!field
-	let	newPots = [if i == field then emptyPot else pots!!i | i <- [0..7]]
-
-	moveRunes_ newPots (field+1) queue
 
 main :: IO ()
 main = do
@@ -69,6 +47,24 @@ main = do
 lecftClickCallback :: Position -> WasAction ()
 lecftClickCallback pos =	return ()
 
+moveRunes_ :: [Pot] -> Int  -> (BankersDequeue Int) -> [Pot]
+moveRunes_ pots field queue 
+  | Data.Dequeue.null(queue) = pots
+  | otherwise = do
+    let Pot oldRunes oldQueue = pots!!field
+    let Just (curRune, newBufferQueue) = popFront(queue)
+    let newQueue = pushBack queue curRune
+    let newRunes = [if i == curRune then (oldRunes!!i + 1) else oldRunes!!i | i <- [0..runeNumber]]
+    let newPot = Pot newRunes newQueue
+    [if i == field then newPot else pots!!i | i <- [0..7]]
+
+moveRunes ::  [Pot] -> Int -> [Pot]
+moveRunes pots field = do
+  let Pot _ queue = pots!!field
+  let newPots = [if i == field then emptyPot else pots!!i | i <- [0..7]]
+  moveRunes_ newPots (field+1) queue
+
+
 nextTurn :: WasAction ()
 nextTurn = do
   gState <- getGameState
@@ -77,6 +73,10 @@ nextTurn = do
                   setGameState (Calculation n)
     Calculation n -> do
                   setGameState (Player (1-n))
+
+checkComboFullfilled :: [Int] -> [Int] -> Bool
+checkComboFullfilled [] [] = True
+checkComboFullfilled (h1:t1) (h2:t2) = h1 >= h2 && checkComboFullfilled t1 t2
 
 
 gameCycle :: WasAction ()
