@@ -9,6 +9,7 @@ import Graphics.UI.Fungen
 import Graphics.Rendering.OpenGL (GLdouble)
 import Data.Dequeue
 import Data.Char
+import System.IO.Unsafe
 --import Data.Sequence
 
 data Pot = Pot [Int] (BankersDequeue Int)
@@ -22,19 +23,19 @@ height = 600
 w = fromIntegral width :: GLdouble
 h = fromIntegral height :: GLdouble
 
-runeNumber = 6
-emptyPot = Pot (zeros runeNumber) (empty :: BankersDequeue Int)
+runeNumber = 4
+emptyPot = Pot (twos runeNumber) (empty :: BankersDequeue Int)
 
-zeros 0 = []
-zeros k = 0:zeros (k-1)
+twos 0 = []
+twos k = 2:twos (k-1)
 
 main :: IO ()
 main = do
     let winConfig = ((100,80),(width,height),"WAS")
         gameMap = colorMap 0.0 0.0 0.0 w h
         groups = []
-        initPots =  [emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot]
-        initCombo = zeros runeNumber
+        initPots =  [initPot 2 emptyPot, initPot 2 emptyPot, initPot 2 emptyPot, initPot 2 emptyPot, initPot 2 emptyPot, initPot 2 emptyPot, initPot 2 emptyPot, initPot 2 emptyPot]
+        initCombo = twos runeNumber
         initGA = GA 0 0 initPots initCombo
         initState = Player 0
         input = [
@@ -43,6 +44,13 @@ main = do
           ,(MouseButton LeftButton, StillDown, \_ pos -> lecftClickCallback pos)
           ] 
     funInit winConfig gameMap groups initState initGA input gameCycle (Timer 16) []
+
+initPot :: Int -> Pot -> Pot
+initPot 0 p = p
+initPot x p = fillInRune (unsafePerformIO (randInt (0,runeNumber-1))) p
+
+fillInRune :: Int -> Pot -> Pot
+fillInRune x (Pot l q) = Pot [if i == x then (l!!i + 1) else l!!i | i <- [0..(runeNumber-1)]] (pushBack q x)
 
 lecftClickCallback :: Position -> WasAction ()
 lecftClickCallback pos =	return ()
@@ -54,7 +62,7 @@ moveRunes_ pots field queue
     let Pot oldRunes oldQueue = pots!!field
     let Just (curRune, newBufferQueue) = popFront(queue)
     let newQueue = pushBack queue curRune
-    let newRunes = [if i == curRune then (oldRunes!!i + 1) else oldRunes!!i | i <- [0..runeNumber]]
+    let newRunes = [if i == curRune then (oldRunes!!i + 1) else oldRunes!!i | i <- [0..(runeNumber-1)]]
     let newPot = Pot newRunes newQueue
     [if i == field then newPot else pots!!i | i <- [0..7]]
 
@@ -77,7 +85,6 @@ nextTurn = do
 checkComboFullfilled :: [Int] -> [Int] -> Bool
 checkComboFullfilled [] [] = True
 checkComboFullfilled (h1:t1) (h2:t2) = h1 >= h2 && checkComboFullfilled t1 t2
-
 
 gameCycle :: WasAction ()
 gameCycle = do
