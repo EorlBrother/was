@@ -49,12 +49,12 @@ main = do
         input = [
           (SpecialKey KeyRight, Press, \_ _ -> nextTurn)
           ,(Char (chr 27), Press, \_ _ -> funExit)
-          ,(MouseButton LeftButton, StillDown, \_ pos -> leftclickcallback pos)
+          ,(MouseButton LeftButton, StillDown, \_ pos -> lecftClickCallback pos)
           ] 
     funInit winConfig gameMap [] initState initGA input gameCycle (Timer 20) []
 
-leftclickcallback :: Position -> WasAction ()
-leftclickcallback pos =	return ()
+lecftClickCallback :: Position -> WasAction ()
+lecftClickCallback pos =	return ()
 
 nextTurn :: WasAction ()
 nextTurn = do
@@ -80,3 +80,8 @@ gameCycle = do
       Player n -> printOnScreen ("Player " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
       Calculation n -> printOnScreen ("Calculation " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
   showFPS TimesRoman24 (w-60,0) 1.0 0.0 0.0
+
+fillPot :: [Int] Int [Int]
+fillPot [] _ -> []
+fillPot [h:t] 0 -> [h+1:t]
+fillPot [h:t] x -> [h:fillPot t x-1]
