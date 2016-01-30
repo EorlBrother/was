@@ -4,16 +4,19 @@
 
 module Main where
 
+import Util
 import Text.Printf
 import Graphics.UI.Fungen
-import Graphics.Rendering.OpenGL (GLdouble)
+import Graphics.Rendering.OpenGL
 import Data.Dequeue
 import Data.Char
+import Data.IORef
+import System.IO.Unsafe
 --import Data.Sequence
 
 data Pot = Pot [Int] (BankersDequeue Int)
-data GameAttribute = GA Int Int [Pot] [Int]-- Scores, die Behälter, Aktuelle Combo
-data GameState = Player Int | Calculation Int
+data GameAttribute = GA Int Int [Pot] [Int] (IO [TextureObject])-- Scores, die Behälter, Aktuelle Combo
+data GameState = Player Int | Calculation Int | Init
 
 type WasAction a = IOGame GameAttribute () GameState () a
 
@@ -24,13 +27,6 @@ h = fromIntegral height :: GLdouble
 
 runeNumber = 6
 emptyPot = Pot (zeros runeNumber) (empty :: BankersDequeue Int)
-
-zeros 0 = []
-zeros k = 0:zeros (k-1)
-
---removeMaybe :: (Maybe (a, q a)) -> (a, q a)
---removeMaybe (Just a) = (a, q a)
---removeMaybe (Nothing) = -1
 
 moveRunes_ :: [Pot] -> Int  -> (BankersDequeue Int) -> [Pot]
 moveRunes_ pots field queue 
@@ -53,12 +49,13 @@ moveRunes pots field = do
 main :: IO ()
 main = do
     let winConfig = ((100,80),(width,height),"WAS")
-        gameMap = colorMap 0.0 0.0 0.0 w h
+        gameMap = colorMap 1.0 0.0 0.0 w h
         groups = []
         initPots =  [emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot]
         initCombo = zeros runeNumber
-        initGA = GA 0 0 initPots initCombo
-        initState = Player 0
+        initGA = GA 0 0 initPots initCombo initRuneTextures
+        initRuneTextures = return ([]::[TextureObject])
+        initState = Init
         input = [
           (SpecialKey KeyRight, Press, \_ _ -> nextTurn)
           ,(Char (chr 27), Press, \_ _ -> funExit)
@@ -71,22 +68,51 @@ lecftClickCallback pos =	return ()
 
 nextTurn :: WasAction ()
 nextTurn = do
-  gState <- getGameState
+  gState <- getGameState  
   case gState of
-    Player n -> do
-                  setGameState (Calculation n)
-    Calculation n -> do
-                  setGameState (Player (1-n))
+      Init -> setGameState (Player 0)
+      Player n -> setGameState (Calculation n)
+      Calculation n -> setGameState (Player (1-n))
 
+initializeGraphics :: WasAction ()
+initializeGraphics = do
+	disableGameFlags
+	let texture = loadPictureInv "graphics/board.bmp" (Just [(255, 0, 255)])
+  	GA s1 s2 pots combo runeTextures<- getGameAttribute
+  	setGameAttribute (GA s1 s2 pots combo texture)
+  	nextTurn
+	return ()
+
+drawSprite :: IO [TextureObject] -> Int -> (GLdouble,GLdouble) -> (GLdouble,GLdouble) -> IO ()
+drawSprite picList picIndex (pX, pY) (sX, sY)= do
+	loadIdentity
+	translate (Vector3 pX pY (0 :: GLdouble) )
+	texture Texture2D $= Enabled
+	p <- picList
+	bindTexture Texture2D (p !! picIndex)
+	color (Color4 1.0 1.0 1.0 (1.0 :: GLfloat))
+	renderPrimitive Quads $ do
+	texCoord2 0.0 0.0;  vertex3 (-x) (-y) 0.0
+	texCoord2 1.0 0.0;  vertex3   x  (-y) 0.0
+	texCoord2 1.0 1.0;  vertex3   x    y  0.0
+	texCoord2 0.0 1.0;  vertex3 (-x)   y  0.0
+	texture Texture2D $= Disabled
+	where 
+		x = sX/2
+		y = sY/2
 
 gameCycle :: WasAction ()
 gameCycle = do
-  GA s1 s2 pots combo <- getGameAttribute
-  setGameAttribute (GA s1 s2 pots combo)
+
+  GA s1 s2 pots combo runeTextures<- getGameAttribute
+  setGameAttribute (GA s1 s2 pots combo runeTextures)
   printOnScreen (show s1) TimesRoman24 (0,0) 1.0 1.0 1.0
   printOnScreen (show s2) TimesRoman24 (20,0) 1.0 1.0 1.0
   gState <- getGameState
   case gState of
+      Init -> initializeGraphics
       Player n -> printOnScreen ("Player " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
       Calculation n -> printOnScreen ("Calculation " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
+  GA s1 s2 pots combo runeTextures<- getGameAttribute
   showFPS TimesRoman24 (w-60,0) 1.0 0.0 0.0
+  liftIOtoIOGame (drawSprite runeTextures 0 (400,300) (700,300))
