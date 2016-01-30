@@ -45,7 +45,7 @@ main = do
         initPots =  [emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot, emptyPot]
         initCombo = zeros runeNumber
         initGA = GA 0 0 initPots initCombo
-        initState = Player 1
+        initState = Player 0
         input = [
           (SpecialKey KeyRight, Press, \_ _ -> nextTurn)
           ,(Char (chr 27), Press, \_ _ -> funExit)
@@ -62,11 +62,8 @@ nextTurn = do
   case gState of
     Player n -> do
                   setGameState (Calculation n)
-    Calculation n -> case n of 
-                    1 -> do
-                          setGameState (Player 2)
-                    2 -> do
-                          setGameState (Player 1)  
+    Calculation n -> do
+                  setGameState (Player (1-n))
 
 
 gameCycle :: WasAction ()
@@ -81,7 +78,7 @@ gameCycle = do
       Calculation n -> printOnScreen ("Calculation " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
   showFPS TimesRoman24 (w-60,0) 1.0 0.0 0.0
 
-fillPot :: [Int] Int [Int]
-fillPot [] _ -> []
-fillPot [h:t] 0 -> [h+1:t]
-fillPot [h:t] x -> [h:fillPot t x-1]
+fillPot :: [Int] -> Int -> [Int]
+fillPot [] _ = []
+fillPot (h:t) 0 = h+1:t
+fillPot (h:t) x = h:fillPot t (x-1)
