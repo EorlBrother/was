@@ -1,11 +1,7 @@
 module Util where
 
-import Text.Printf
 import Graphics.UI.Fungen
-import Graphics.UI.Fungen.Loader
 import Graphics.Rendering.OpenGL
-import Data.Dequeue
-import Data.Char
 
 zeros 0 = []
 zeros k = 0:zeros (k-1)
