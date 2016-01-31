@@ -11,7 +11,6 @@ import Data.Dequeue
 import Data.Char
 import Data.IORef
 import System.IO.Unsafe
---import Data.Sequence
 
 data Rune = Rune Int Int
 data Pot = Pot [Int] [Rune]
@@ -70,7 +69,8 @@ main = do
 			]
     funInit winConfig gameMap groups initState initGA input gameCycle (Timer 16) bmpList
 
-randomPot x r= initPot 2 x r emptyPot
+randomPot :: Int -> [Int] -> Pot
+randomPot k r = initPot 2 k r emptyPot
 
 initPot :: Int -> Int -> [Int] -> Pot -> Pot
 initPot 0 _ _ p = p
@@ -105,7 +105,6 @@ nextTurn :: WasAction ()
 nextTurn = do
   gState <- getGameState  
   case gState of
-      -- Init -> setGameState (Player 0)
       Player n -> setGameState (Calculation n)
       Calculation n -> setGameState (Player (1-n))
 
@@ -113,47 +112,31 @@ checkComboFullfilled :: [Int] -> [Int] -> Bool
 checkComboFullfilled [] [] = True
 checkComboFullfilled (h1:t1) (h2:t2) = h1 >= h2 && checkComboFullfilled t1 t2
 
---initializeGraphics :: WasAction ()
---initializeGraphics = do
---	disableGameFlags
---	let filePicList  = [("graphics/board.bmp", (Just [(255, 0, 255)]))]
---	t2 <- loadPictures filePicList
---	t <- newIORef texture
---  	GA s1 s2 pots combo runeTextures<- getGameAttribute
---  	setGameAttribute (GA s1 s2 pots combo t)
---  	nextTurn
---	return ()
-
---drawSprite :: IORef [TextureObject] -> Int -> (GLdouble,GLdouble) -> (GLdouble,GLdouble) -> IO ()
---drawSprite picList picIndex (pX, pY) (sX, sY)= do
---	p <- picList
---	loadIdentity
---	translate (Vector3 pX pY (0 :: GLdouble) )
---	texture Texture2D $= Enabled
---	bindTexture Texture2D (p !! picIndex)
---	color (Color4 1.0 1.0 1.0 (1.0 :: GLfloat))
---	renderPrimitive Quads $ do
---		texCoord2 0.0 0.0;  vertex3 (-x) (-y) 0.0
---		texCoord2 1.0 0.0;  vertex3   x  (-y) 0.0
---		texCoord2 1.0 1.0;  vertex3   x    y  0.0
---		texCoord2 0.0 1.0;  vertex3 (-x)   y  0.0
---	texture Texture2D $= Disabled
---	where 
---		x = sX/2
---		y = sY/2
-
 gameCycle :: WasAction ()
 gameCycle = do
   disableGameFlags
   GA s1 s2 pots combo runes background<- getGameAttribute
   gState <- getGameState
   case gState of
-      -- Init -> initializeGraphics
       Player n -> printOnScreen ("Player " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
       Calculation n -> printOnScreen ("Calculation " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
   printOnScreen (show s1) TimesRoman24 (0,0) 1.0 1.0 1.0
   printOnScreen (show s2) TimesRoman24 (20,0) 1.0 1.0 1.0
   showFPS TimesRoman24 (w-60,0) 1.0 0.0 0.0
   drawObject background
-  --liftIOtoIOGame (drawSprite runeTextures 0 (400,300) (100,100))
-  
+  drawObject (runes!!0)
+  drawObject (runes!!1)
+  drawObject (runes!!2)
+  drawObject (runes!!3)
+  drawObject (runes!!4)
+  drawObject (runes!!5)
+  drawObject (runes!!6)
+  drawObject (runes!!7)
+  drawObject (runes!!8)
+  drawObject (runes!!9)
+  drawObject (runes!!10)
+  drawObject (runes!!11)
+  drawObject (runes!!12)
+  drawObject (runes!!13)
+  drawObject (runes!!14)
+  drawObject (runes!!15)
