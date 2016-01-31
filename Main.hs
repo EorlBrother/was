@@ -124,5 +124,5 @@ gameCycle = do
   printOnScreen (show s1) TimesRoman24 (0,0) 1.0 1.0 1.0
   printOnScreen (show s2) TimesRoman24 (20,0) 1.0 1.0 1.0
   showFPS TimesRoman24 (w-60,0) 1.0 0.0 0.0
-  liftIOtoIOGame (drawSprite runeTextures 0 (400,300) (100,100))
+  liftIOtoIOGame (drawSprite runeTextures 0 (400,300) (800,600))
   
