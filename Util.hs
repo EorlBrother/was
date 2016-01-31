@@ -9,19 +9,19 @@ zeros :: Int -> [Int]
 zeros 0 = []
 zeros k = 0:zeros (k-1)
 
-genRandomIntIO :: Int -> Int -> IO Int
-genRandomIntIO min max = do 
+genRandomIntIO_pure :: Int -> Int -> IO Int
+genRandomIntIO_pure min max = do 
 	let x = getStdRandom(randomR (min,max))
 	y <- x 
 	print y
 	x
 
-genRandomInt :: Int -> Int -> Int
-genRandomInt min max = (unsafePerformIO (genRandomIntIO min max))
+genRandomInt_pure :: Int -> Int -> Int
+genRandomInt_pure min max = (unsafePerformIO (genRandomIntIO_pure min max))
 
-genRandomList :: Int -> Int -> Int -> [Int]
-genRandomList 0 _ _= []
-genRandomList k min max= (genRandomInt min max):genRandomList (k-1) min max
+genRandomList_pure :: Int -> Int -> Int -> [Int]
+genRandomList_pure 0 _ _= []
+genRandomList_pure k min max= (genRandomInt_pure min max):genRandomList_pure (k-1) min max
 ---- modded from https://github.com/haskell-game/fungen/blob/master/Graphics/UI/Fungen/Objects.hs
 --createPicture :: ObjectPicture -> (GameObjectPicture,Point2D)
 --createPicture (Basic (Polyg points r g b fillMode))  = (B (P (point2DtoVertex3 points) (Color4 r g b 1.0) fillMode),findSize points)
