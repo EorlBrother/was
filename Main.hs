@@ -60,7 +60,7 @@ main = do
         initPots =  [randomPot 0 randomList, randomPot 2 randomList, randomPot 4 randomList, randomPot 6 randomList, randomPot 8 randomList, randomPot 10 randomList, randomPot 12 randomList, randomPot 14 randomList]
         initCombo = zeros runeNumber
         initRunes = createInitialRuneObjects randomList
-        initBackground = (object "background" (Tex (702, 380) 1) True (400, 380) (0,0) ())
+        initBackground = (object "background" (Tex (702, 380) 4) True (400, 380) (0,0) ())
     let initGA = GA 0 0 initPots initCombo initRunes initBackground
         initState = Player 0
         input = [
@@ -146,32 +146,14 @@ gameCycle :: WasAction ()
 gameCycle = do
   disableGameFlags
   GA s1 s2 pots combo runes background<- getGameAttribute
-  setGameAttribute (GA s1 s2 pots combo runes background)
   gState <- getGameState
   case gState of
       -- Init -> initializeGraphics
       Player n -> printOnScreen ("Player " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
       Calculation n -> printOnScreen ("Calculation " ++ show(n)) TimesRoman24 (100,100) 1.0 1.0 1.0
-  GA s1 s2 pots combo runeTextures background<- getGameAttribute
   printOnScreen (show s1) TimesRoman24 (0,0) 1.0 1.0 1.0
   printOnScreen (show s2) TimesRoman24 (20,0) 1.0 1.0 1.0
   showFPS TimesRoman24 (w-60,0) 1.0 0.0 0.0
   drawObject background
-  drawObject (runes!!0)
-  drawObject (runes!!1)
-  drawObject (runes!!2)
-  drawObject (runes!!3)
-  drawObject (runes!!4)
-  drawObject (runes!!5)
-  drawObject (runes!!6)
-  drawObject (runes!!7)
-  drawObject (runes!!8)
-  drawObject (runes!!9)
-  drawObject (runes!!10)
-  drawObject (runes!!11)
-  drawObject (runes!!12)
-  drawObject (runes!!13)
-  drawObject (runes!!14)
-  drawObject (runes!!15)
   --liftIOtoIOGame (drawSprite runeTextures 0 (400,300) (100,100))
   
