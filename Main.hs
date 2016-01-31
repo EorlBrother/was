@@ -11,8 +11,6 @@ import Data.Dequeue
 import Data.Char
 import Data.IORef
 import System.IO.Unsafe
-import System.Random
---import Data.Sequence
 
 data Rune = Rune Int Int
 data Pot = Pot [Int] [Rune]
@@ -51,7 +49,7 @@ main = do
         initPots =  [randomPot 0 randomList, randomPot 2 randomList, randomPot 4 randomList, randomPot 6 randomList, randomPot 8 randomList, randomPot 10 randomList, randomPot 12 randomList, randomPot 14 randomList]
         initCombo = zeros runeNumber
         initRunes = createInitialRuneObjects randomList
-        initBackground = (object "background" (Tex (702, 380) 1) True (400, 380) (0,0) ())
+        initBackground = (object "background" (Tex (702, 380) 4) True (400, 380) (0,0) ())
     let initGA = GA 0 0 initPots initCombo initRunes initBackground
         initState = Player 0
         input = [
@@ -69,7 +67,7 @@ main = do
         initPots =  []
         initCombo = zeros runeNumber
         initRunes = []
-        initBackground = (object "background" (Tex (702, 380) 1) True (400, 380) (0,0) ())
+        initBackground = (object "background" (Tex (702, 380) 4) True (400, 380) (0,0) ())
     let initGA = GA 0 0 initPots initCombo initRunes initBackground
         initState = Init
         input = [
@@ -123,35 +121,6 @@ checkComboFullfilled :: [Int] -> [Int] -> Bool
 checkComboFullfilled [] [] = True
 checkComboFullfilled (h1:t1) (h2:t2) = h1 >= h2 && checkComboFullfilled t1 t2
 
---initializeGraphics :: WasAction ()
---initializeGraphics = do
---	disableGameFlags
---	let filePicList  = [("graphics/board.bmp", (Just [(255, 0, 255)]))]
---	t2 <- loadPictures filePicList
---	t <- newIORef texture
---  	GA s1 s2 pots combo runeTextures<- getGameAttribute
---  	setGameAttribute (GA s1 s2 pots combo t)
---  	nextTurn
---	return ()
-
---drawSprite :: IORef [TextureObject] -> Int -> (GLdouble,GLdouble) -> (GLdouble,GLdouble) -> IO ()
---drawSprite picList picIndex (pX, pY) (sX, sY)= do
---	p <- picList
---	loadIdentity
---	translate (Vector3 pX pY (0 :: GLdouble) )
---	texture Texture2D $= Enabled
---	bindTexture Texture2D (p !! picIndex)
---	color (Color4 1.0 1.0 1.0 (1.0 :: GLfloat))
---	renderPrimitive Quads $ do
---		texCoord2 0.0 0.0;  vertex3 (-x) (-y) 0.0
---		texCoord2 1.0 0.0;  vertex3   x  (-y) 0.0
---		texCoord2 1.0 1.0;  vertex3   x    y  0.0
---		texCoord2 0.0 1.0;  vertex3 (-x)   y  0.0
---	texture Texture2D $= Disabled
---	where 
---		x = sX/2
---		y = sY/2
-
 genRandomList :: Int -> Int -> Int -> (WasAction [Int])
 genRandomList 0 _ _= return []
 genRandomList k min max= do
@@ -192,7 +161,7 @@ initGame = do
 	let initPots = [pot0, pot1, pot2, pot3, pot4, pot5, pot6, pot7]
 	let	initCombo = zeros runeNumber
 	initRunes <- createInitialRuneObjects randomList
-	let	initBackground = (object "background" (Tex (702, 380) 1) True (400, 380) (0,0) ())
+	let	initBackground = (object "background" (Tex (702, 380) 4) True (400, 380) (0,0) ())
 	let initGA = GA 0 0 initPots initCombo initRunes initBackground
 	setGameAttribute(initGA)
 	nextTurn
@@ -227,5 +196,3 @@ gameCycle = do
   drawObject (runes!!13)
   drawObject (runes!!14)
   drawObject (runes!!15)
-  --liftIOtoIOGame (drawSprite runeTextures 0 (400,300) (100,100))
-  
